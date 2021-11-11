@@ -1,0 +1,11 @@
+domain:
+  name: muktiarafi.onmicrosoft.com
+
+azure:
+  activedirectory:
+    client-secret: ${CLIENT_SECRET}
+    tenant-id: ${TENANT_ID}
+    client-id: ${CLIENT_ID}
+    authorization-clients:
+      graph:
+        scopes: https://graph.microsoft.com/.default
