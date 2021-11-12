@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Component
-public final class GraphServiceUtils {
+public class GraphServiceUtils {
 
     private final String clientId;
     private final String clientSecret;
