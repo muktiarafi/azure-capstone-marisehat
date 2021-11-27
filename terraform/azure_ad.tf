@@ -39,6 +39,7 @@ resource "azuread_application" "mari_sehat" {
       type                       = "Admin"
       value                      = "write"
     }
+
   }
 
   app_role {
@@ -88,6 +89,31 @@ resource "azuread_application" "mari_sehat" {
     resource_access {
       id   = "b4e74841-8e56-480b-be8b-910348b18b4c" # User.ReadWrite
       type = "Scope"
+    }
+
+    resource_access {
+      id   = "741f803b-c850-494e-b5df-cde7c675a1ca" # User.ReadWrite.All
+      type = "Role"
+    }
+
+    resource_access {
+      id   = "5b567255-7703-4780-807c-7be8301ae99b" # Group.Read.All
+      type = "Role"
+    }
+
+    resource_access {
+      id   = "62a82d76-70ea-41e2-9197-370581804d09" # Group.ReadWrite.All
+      type = "Role"
+    }
+
+    resource_access {
+      id   = "98830695-27a2-44f7-8c18-0c3ebc9698f6" # GroupMember.Read.All
+      type = "Role"
+    }
+
+    resource_access {
+      id   = "dbaae8cf-10b5-4b86-a4a1-f871c94c6695" # GroupMember.ReadWrite.All
+      type = "Role"
     }
   }
 }
