@@ -1,6 +1,10 @@
 package dev.muktiarafi.marisehat.service.impl;
 
+import com.microsoft.graph.models.DirectoryObject;
+import com.microsoft.graph.models.Group;
 import com.microsoft.graph.models.User;
+import com.microsoft.graph.options.HeaderOption;
+import com.microsoft.graph.options.Option;
 import dev.muktiarafi.marisehat.dto.UserDto;
 import dev.muktiarafi.marisehat.model.MSPasswordProfile;
 import dev.muktiarafi.marisehat.model.MSUser;
@@ -11,6 +15,8 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.LinkedList;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,6 +44,9 @@ public class UserServiceImpl implements UserService {
                 .mailNickname(userDto.getNickname())
                 .passwordProfile(msPasswordProfile)
                 .build();
+        var group = findUserGroup()
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        assignUserToGroup(msUser.id, group.id);
 
         var client = graphServiceUtils.client();
 
@@ -70,5 +79,31 @@ public class UserServiceImpl implements UserService {
         var client = graphServiceUtils.client();
 
         client.users(userId).buildRequest().delete();
+    }
+
+    private Optional<Group> findUserGroup() {
+        LinkedList<Option> requestOptions = new LinkedList<>();
+        requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
+        var client = graphServiceUtils.client();
+        var groups = client
+                .groups()
+                .buildRequest(requestOptions)
+                .filter("displayName eq 'User'")
+                .get();
+        if (groups == null) {
+            return Optional.empty();
+        }
+
+        return Optional.of(groups.getCurrentPage().get(0));
+    }
+
+    private void assignUserToGroup(String userId, String groupId) {
+        var directoryObject = new DirectoryObject();
+        directoryObject.id = userId;
+
+        graphServiceUtils.client()
+                .groups(groupId).members().references()
+                .buildRequest()
+                .post(directoryObject);
     }
 }
