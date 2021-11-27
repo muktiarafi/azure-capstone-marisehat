@@ -1,0 +1,46 @@
+name: terraform
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - terraform/**
+  pull_request:
+    branches:
+      - master
+    paths:
+      - terraform/**
+    
+  workflow_dispatch:
+
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        env:
+          TF_WORKSPACE: marisehat
+          
+      - name: format
+        run: terraform fmt -check
+        working-directory: terraform
+        
+      - name: init
+        run: terraform init
+        working-directory: terraform
+        
+      - name: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan
+        working-directory: terraform
+      
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/master' && github.event_name == 'push'
+        run: terraform apply -auto-approve
+        working-directory: terraform
