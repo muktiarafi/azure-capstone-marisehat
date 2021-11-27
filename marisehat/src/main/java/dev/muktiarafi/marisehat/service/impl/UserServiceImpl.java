@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -42,9 +44,31 @@ public class UserServiceImpl implements UserService {
         return client.users().buildRequest().post(msUser);
     }
 
+    public User find(String userId) {
+        var client = graphServiceUtils.client();
+
+        return client.users(userId).buildRequest().get();
+    }
+
+    @Override
     public User find(OAuth2AuthorizedClient auth2AuthorizedClient) {
         var client = graphServiceUtils.client(auth2AuthorizedClient);
 
         return client.me().buildRequest().get();
+    }
+
+    @Override
+    public List<User> findAll() {
+        var client = graphServiceUtils.client();
+        var users = client.users().buildRequest().get();
+
+        return users.getCurrentPage();
+    }
+
+    @Override
+    public void delete(String userId) {
+        var client = graphServiceUtils.client();
+
+        client.users(userId).buildRequest().delete();
     }
 }

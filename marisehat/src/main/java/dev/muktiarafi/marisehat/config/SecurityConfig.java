@@ -16,6 +16,7 @@ public class SecurityConfig extends AADWebSecurityConfigurerAdapter {
         super.configure(http);
         http.authorizeRequests()
                 .mvcMatchers(HttpMethod.POST, "/users").permitAll()
+                .mvcMatchers("/admins/**").hasAuthority("APPROLE_Admin")
                 .anyRequest().authenticated();
     }
 
