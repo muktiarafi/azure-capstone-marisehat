@@ -120,3 +120,15 @@ resource "azuread_app_role_assignment" "assign_partner_role" {
   principal_object_id = azuread_group.partner.id
   resource_object_id  = azuread_service_principal.principal.object_id
 }
+
+resource "azuread_group" "user" {
+  display_name     = "user"
+  owners           = [data.azuread_client_config.current.object_id]
+  security_enabled = true
+}
+
+resource "azuread_app_role_assignment" "assign_user_role" {
+  app_role_id         = random_uuid.partner_role.id
+  principal_object_id = azuread_group.user.id
+  resource_object_id  = azuread_service_principal.principal.object_id
+}
