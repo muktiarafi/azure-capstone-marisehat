@@ -70,7 +70,7 @@ resource "azuread_application" "mari_sehat" {
   }
 
   web {
-    redirect_uris = ["http://localhost:8080/login/oauth2/code/"]
+    redirect_uris = ["http://localhost:8080/login/oauth2/code/", "http://localhost:8080/swagger-ui/oauth2-redirect.html"]
 
     implicit_grant {
       access_token_issuance_enabled = true
