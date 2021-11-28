@@ -5,6 +5,7 @@ import com.microsoft.graph.models.Group;
 import com.microsoft.graph.models.User;
 import com.microsoft.graph.options.HeaderOption;
 import com.microsoft.graph.options.Option;
+import com.microsoft.graph.requests.GraphServiceClient;
 import dev.muktiarafi.marisehat.dto.UserDto;
 import dev.muktiarafi.marisehat.model.MSPasswordProfile;
 import dev.muktiarafi.marisehat.model.MSUser;
@@ -44,13 +45,14 @@ public class UserServiceImpl implements UserService {
                 .mailNickname(userDto.getNickname())
                 .passwordProfile(msPasswordProfile)
                 .build();
-        var group = findUserGroup()
-                .orElseThrow(() -> new RuntimeException("Group not found"));
-        assignUserToGroup(msUser.id, group.id);
 
         var client = graphServiceUtils.client();
+        var actualUser = client.users().buildRequest().post(msUser);
+        var group = findUserGroup()
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+        assignUserToGroup(actualUser.id, group.id, client);
 
-        return client.users().buildRequest().post(msUser);
+        return actualUser;
     }
 
     public User find(String userId) {
@@ -97,12 +99,11 @@ public class UserServiceImpl implements UserService {
         return Optional.of(groups.getCurrentPage().get(0));
     }
 
-    private void assignUserToGroup(String userId, String groupId) {
+    private void assignUserToGroup(String userId, String groupId, GraphServiceClient client) {
         var directoryObject = new DirectoryObject();
         directoryObject.id = userId;
 
-        graphServiceUtils.client()
-                .groups(groupId).members().references()
+        client.groups(groupId).members().references()
                 .buildRequest()
                 .post(directoryObject);
     }
