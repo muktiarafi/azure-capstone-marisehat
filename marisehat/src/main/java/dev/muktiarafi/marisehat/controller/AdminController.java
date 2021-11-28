@@ -2,6 +2,8 @@ package dev.muktiarafi.marisehat.controller;
 
 import com.microsoft.graph.models.User;
 import dev.muktiarafi.marisehat.dto.ResponseDto;
+import dev.muktiarafi.marisehat.dto.ResponseListDto;
+import dev.muktiarafi.marisehat.dto.UserDto;
 import dev.muktiarafi.marisehat.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,11 +22,11 @@ public class AdminController {
     private final UserService userService;
 
     @DeleteMapping("/users/{userId}")
-    public ResponseDto<User> deleteUser(@PathVariable String userId) {
+    public ResponseDto<UserDto> deleteUser(@PathVariable String userId) {
         var user = userService.find(userId);
         userService.delete(userId);
 
-        return ResponseDto.<User>builder()
+        return ResponseDto.<UserDto>builder()
                 .status(true)
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(user)
@@ -32,10 +34,10 @@ public class AdminController {
     }
 
     @GetMapping(value = "/users")
-    public ResponseDto<List<User>> findAllUser() {
+    public ResponseListDto<UserDto> findAllUser() {
         var users = userService.findAll();
 
-        return ResponseDto.<List<User>>builder()
+        return ResponseListDto.<UserDto>builder()
                 .data(users)
                 .build();
     }

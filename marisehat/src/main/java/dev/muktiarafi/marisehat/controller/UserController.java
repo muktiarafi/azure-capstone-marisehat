@@ -1,6 +1,6 @@
 package dev.muktiarafi.marisehat.controller;
 
-import com.microsoft.graph.models.User;
+import dev.muktiarafi.marisehat.dto.RegisterUserDto;
 import dev.muktiarafi.marisehat.dto.ResponseDto;
 import dev.muktiarafi.marisehat.dto.UserDto;
 import dev.muktiarafi.marisehat.service.UserService;
@@ -26,10 +26,10 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseDto<User> create(@Valid @RequestBody UserDto userDto) {
-        var user = userService.create(userDto);
+    public ResponseDto<UserDto> create(@Valid @RequestBody RegisterUserDto registerUserDto) {
+        var user = userService.create(registerUserDto);
 
-        return ResponseDto.<User>builder()
+        return ResponseDto.<UserDto>builder()
                 .status(true)
                 .message(HttpStatus.CREATED.getReasonPhrase())
                 .data(user)
@@ -37,10 +37,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseDto<User> current(@RegisteredOAuth2AuthorizedClient("graph")OAuth2AuthorizedClient auth2AuthorizedClient) {
+    public ResponseDto<UserDto> current(@RegisteredOAuth2AuthorizedClient("graph")OAuth2AuthorizedClient auth2AuthorizedClient) {
         var user = userService.find(auth2AuthorizedClient);
 
-        return ResponseDto.<User>builder()
+        return ResponseDto.<UserDto>builder()
                 .status(true)
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(user)
