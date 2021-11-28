@@ -124,7 +124,7 @@ resource "azuread_service_principal" "principal" {
 }
 
 resource "azuread_user" "admin" {
-  user_principal_name = "admin@${data.azuread_domains.default.domains.0.domain_name}"
+  user_principal_name = "admin@${var.domain_name}"
   display_name        = "Admin"
   password            = var.azure_ad_admin_password
 }
@@ -137,7 +137,7 @@ resource "azuread_app_role_assignment" "assign_admin_role" {
 
 resource "azuread_group" "partner" {
   display_name     = "partner"
-  owners           = [data.azuread_client_config.current.object_id]
+  owners           = [data.azuread_client_config.current.object_id, azuread_service_principal.principal.object_id]
   security_enabled = true
 }
 
@@ -149,12 +149,12 @@ resource "azuread_app_role_assignment" "assign_partner_role" {
 
 resource "azuread_group" "user" {
   display_name     = "user"
-  owners           = [data.azuread_client_config.current.object_id]
+  owners           = [data.azuread_client_config.current.object_id, azuread_service_principal.principal.object_id]
   security_enabled = true
 }
 
 resource "azuread_app_role_assignment" "assign_user_role" {
-  app_role_id         = random_uuid.partner_role.id
+  app_role_id         = random_uuid.user_role.id
   principal_object_id = azuread_group.user.id
   resource_object_id  = azuread_service_principal.principal.object_id
 }
