@@ -22,6 +22,7 @@ public class SecurityConfig extends AADWebSecurityConfigurerAdapter {
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER);
         http.authorizeRequests()
+                .mvcMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .mvcMatchers(HttpMethod.POST, "/users").permitAll()
                 .mvcMatchers("/admins/**").hasRole("Admin")
                 .mvcMatchers(HttpMethod.GET, "/patients/**").hasAnyRole("Admin", "User", "Partner")

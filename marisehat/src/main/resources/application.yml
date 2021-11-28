@@ -19,3 +19,14 @@ azure:
       graph:
         scopes: https://graph.microsoft.com/.default
     session-stateless: true
+
+springdoc:
+  swagger-ui:
+    oauth:
+      client-id: ${CLIENT_ID}
+      client-secret: ${CLIENT_SECRET}
+      scopes: openid,api://marisehat/read,api://marisehat/write
+      use-pkce-with-authorization-code-grant: true
+    oauth2-redirect-url: ${OAUTH2_REDIRECT_URL}
+  oAuthFlow:
+    authorizationUrl: ${OAUTH2_AUTHORIZATION_URL}
