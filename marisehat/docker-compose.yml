@@ -1,0 +1,24 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - '8080:8080'
+    env_file:
+      - .env
+    depends_on:
+      pg:
+        condition: service_healthy
+
+  pg:
+    image: postgres:alpine
+    environment:
+      POSTGRES_DB: marisehat
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: '12345678'
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
