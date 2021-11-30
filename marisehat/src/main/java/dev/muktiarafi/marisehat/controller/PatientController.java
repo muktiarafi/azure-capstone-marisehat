@@ -1,9 +1,13 @@
 package dev.muktiarafi.marisehat.controller;
 
+import dev.muktiarafi.marisehat.dto.LabResultDto;
 import dev.muktiarafi.marisehat.dto.PatientDto;
 import dev.muktiarafi.marisehat.dto.ResponseDto;
+import dev.muktiarafi.marisehat.dto.ResponseListDto;
 import dev.muktiarafi.marisehat.dto.ResponsePageableDto;
+import dev.muktiarafi.marisehat.entity.LabResult;
 import dev.muktiarafi.marisehat.entity.Patient;
+import dev.muktiarafi.marisehat.service.LabResultService;
 import dev.muktiarafi.marisehat.service.PatientService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +29,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class PatientController {
     private final PatientService patientService;
+    private final LabResultService labResultService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -73,6 +78,7 @@ public class PatientController {
                 .totalItems(patients.getSize())
                 .currentPage(patients.getNumber())
                 .totalPages(patients.getTotalPages())
+                .data(patients.getContent())
                 .build();
     }
 
@@ -84,6 +90,28 @@ public class PatientController {
                 .status(true)
                 .message(HttpStatus.OK.getReasonPhrase())
                 .data(patient)
+                .build();
+    }
+
+    @PostMapping("/{patientId}/lab-results")
+    public ResponseDto<LabResult> createLabResult(@PathVariable UUID patientId, @RequestBody LabResultDto labResultDto) {
+        var labResult = labResultService.create(patientId, labResultDto);
+
+        return ResponseDto.<LabResult>builder()
+                .status(true)
+                .message(HttpStatus.CREATED.getReasonPhrase())
+                .data(labResult)
+                .build();
+    }
+
+    @GetMapping("/{patientId}/lab-results")
+    public ResponseListDto<LabResult> getPatientLabResult(@PathVariable UUID patientId) {
+        var labResults = labResultService.getPatientLabResult(patientId);
+
+        return ResponseListDto.<LabResult>builder()
+                .status(true)
+                .message(HttpStatus.OK.getReasonPhrase())
+                .data(labResults)
                 .build();
     }
 }

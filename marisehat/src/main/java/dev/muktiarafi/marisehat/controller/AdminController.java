@@ -1,6 +1,5 @@
 package dev.muktiarafi.marisehat.controller;
 
-import com.microsoft.graph.models.User;
 import dev.muktiarafi.marisehat.dto.ResponseDto;
 import dev.muktiarafi.marisehat.dto.ResponseListDto;
 import dev.muktiarafi.marisehat.dto.UserDto;
@@ -12,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/admins")
@@ -38,6 +35,7 @@ public class AdminController {
         var users = userService.findAll();
 
         return ResponseListDto.<UserDto>builder()
+                .status(true)
                 .data(users)
                 .build();
     }

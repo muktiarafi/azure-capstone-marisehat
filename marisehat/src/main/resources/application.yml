@@ -19,6 +19,8 @@ azure:
       graph:
         scopes: https://graph.microsoft.com/.default
     session-stateless: true
+  storage:
+    account-name: ${STORAGE_ACCOUNT_NAME}
 
 springdoc:
   swagger-ui:
@@ -30,3 +32,10 @@ springdoc:
     oauth2-redirect-url: ${OAUTH2_REDIRECT_URL}
   oAuthFlow:
     authorizationUrl: ${OAUTH2_AUTHORIZATION_URL}
+
+app:
+  config:
+    azure:
+      storage:
+        endpoint: ${STORAGE_ENDPOINT}
+        container-name: ${CONTAINER_NAME}
