@@ -1,15 +1,12 @@
 package dev.muktiarafi.marisehat.utils;
 
-import com.azure.core.util.BinaryData;
 import com.azure.storage.blob.BlobClient;
 import com.azure.storage.blob.BlobServiceClient;
-import com.azure.storage.blob.models.BlobHttpHeaders;
 import com.azure.storage.blob.models.UserDelegationKey;
 import com.azure.storage.blob.sas.BlobContainerSasPermission;
 import com.azure.storage.blob.sas.BlobServiceSasSignatureValues;
 import com.azure.storage.common.sas.SasProtocol;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -33,18 +30,6 @@ public class StorageUtils {
         var containerClient = blobServiceClient.getBlobContainerClient(containerName);
 
         return containerClient.getBlobClient(blobName);
-    }
-
-    public void upload(String blobName, byte[] data) {
-        var blobClient = getBlobClient(blobName);
-
-        blobClient.upload(BinaryData.fromBytes(data));
-        blobClient.setHttpHeaders(new BlobHttpHeaders().setContentType(MediaType.APPLICATION_PDF_VALUE));
-    }
-
-    public void upload(BlobClient blobClient, byte[] data) {
-        blobClient.upload(BinaryData.fromBytes(data));
-        blobClient.setHttpHeaders(new BlobHttpHeaders().setContentType(MediaType.APPLICATION_PDF_VALUE));
     }
 
     public UserDelegationKey generateUserDelegationKey() {
