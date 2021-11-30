@@ -37,7 +37,10 @@ public class UserServiceImpl implements UserService {
         this.userMapper = userMapper;
     }
 
-    public UserDto create(RegisterUserDto registerUserDto) {
+    public UserDto create(RegisterUserDto registerUserDto, String groupName) {
+        if (!groupName.equals("User") && !groupName.equals("Partner")) {
+            throw new IllegalArgumentException("Only User and Partner group is valid");
+        }
         var msPasswordProfile = new MSPasswordProfile(
                 false,
                 registerUserDto.getPassword()
@@ -52,9 +55,9 @@ public class UserServiceImpl implements UserService {
 
         var client = graphServiceUtils.client();
         var actualUser = client.users().buildRequest().post(msUser);
-        var group = findUserGroup()
+        var group = findGroup(groupName)
                 .orElseThrow(() -> new RuntimeException("Group not found"));
-        assignUserToGroup(actualUser.id, group.id, client);
+        assignToGroup(actualUser.id, group.id, client);
 
         return userMapper.userToUserDto(actualUser);
     }
@@ -91,14 +94,14 @@ public class UserServiceImpl implements UserService {
         client.users(userId).buildRequest().delete();
     }
 
-    private Optional<Group> findUserGroup() {
+    private Optional<Group> findGroup(String groupName) {
         LinkedList<Option> requestOptions = new LinkedList<>();
         requestOptions.add(new HeaderOption("ConsistencyLevel", "eventual"));
         var client = graphServiceUtils.client();
         var groups = client
                 .groups()
                 .buildRequest(requestOptions)
-                .filter("displayName eq 'User'")
+                .filter(String.format("displayName eq '%s'", groupName))
                 .get();
         if (groups == null) {
             return Optional.empty();
@@ -107,7 +110,7 @@ public class UserServiceImpl implements UserService {
         return Optional.of(groups.getCurrentPage().get(0));
     }
 
-    private void assignUserToGroup(String userId, String groupId, GraphServiceClient client) {
+    private void assignToGroup(String userId, String groupId, GraphServiceClient client) {
         var directoryObject = new DirectoryObject();
         directoryObject.id = userId;
 

@@ -69,4 +69,14 @@ public class ExceptionController {
 
         return new ResponseEntity<>(responseList, HttpStatus.resolve(e.getResponseCode()));
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseListDto<String> illegalArgumentException(IllegalArgumentException e) {
+        return ResponseListDto.<String>builder()
+                .status(false)
+                .message(HttpStatus.BAD_REQUEST.getReasonPhrase())
+                .data(List.of(e.getMessage()))
+                .build();
+    }
 }

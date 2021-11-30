@@ -7,7 +7,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import java.util.List;
 
 public interface UserService {
-    UserDto create(RegisterUserDto registerUserDto);
+    UserDto create(RegisterUserDto registerUserDto, String groupName);
     UserDto find(String userId);
     UserDto find(OAuth2AuthorizedClient auth2AuthorizedClient);
     List<UserDto> findAll();
