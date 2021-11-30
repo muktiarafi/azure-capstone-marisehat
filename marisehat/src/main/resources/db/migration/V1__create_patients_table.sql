@@ -1,5 +1,5 @@
 CREATE TABLE patients (
-    id SERIAL PRIMARY KEY,
+    id UUID NOT NULL UNIQUE PRIMARY KEY,
     full_name VARCHAR(255) NOT NULL,
     age INTEGER NOT NULL,
     gender VARCHAR(45) NOT NULL,

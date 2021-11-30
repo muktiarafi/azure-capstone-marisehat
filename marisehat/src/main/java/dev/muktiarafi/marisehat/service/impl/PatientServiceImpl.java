@@ -11,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class PatientServiceImpl implements PatientService {
@@ -25,7 +27,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient get(Long patientId) {
+    public Patient get(UUID patientId) {
         var patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
@@ -40,7 +42,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient update(Long patientId, PatientDto patientDto) {
+    public Patient update(UUID patientId, PatientDto patientDto) {
         var patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
         patientMapper.fromDto(patientDto, patient);
@@ -49,7 +51,7 @@ public class PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Patient delete(Long patientId) {
+    public Patient delete(UUID patientId) {
         var patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
         patientRepository.delete(patient);

@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/patients")
 @AllArgsConstructor
@@ -36,7 +38,7 @@ public class PatientController {
     }
 
     @PutMapping("/{patientId}")
-    public ResponseDto<Patient> update(@PathVariable Long patientId,  @RequestBody PatientDto patientDto) {
+    public ResponseDto<Patient> update(@PathVariable UUID patientId,  @RequestBody PatientDto patientDto) {
         var patient = patientService.update(patientId, patientDto);
 
         return ResponseDto.<Patient>builder()
@@ -48,7 +50,7 @@ public class PatientController {
 
 
     @GetMapping("/{patientId}")
-    public ResponseDto<Patient> get(@PathVariable Long patientId) {
+    public ResponseDto<Patient> get(@PathVariable UUID patientId) {
         var patient = patientService.get(patientId);
 
         return ResponseDto.<Patient>builder()
@@ -75,7 +77,7 @@ public class PatientController {
     }
 
     @DeleteMapping("/{patientId}")
-    public ResponseDto<Patient> delete(@PathVariable Long patientId) {
+    public ResponseDto<Patient> delete(@PathVariable UUID patientId) {
         var patient = patientService.delete(patientId);
 
         return ResponseDto.<Patient>builder()
