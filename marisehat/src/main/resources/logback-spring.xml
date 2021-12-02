@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProperty scope="context" name="logstash-server" source="spring.logstash.server"/>
+    <appender name="stash" class="net.logstash.logback.appender.LogstashUdpSocketAppender">
+        <host>${logstash-server}</host>
+        <port>5000</port>
+        <layout class="net.logstash.logback.layout.LogstashLayout">
+            <customFields>{"app":"marisehat-api"}</customFields>
+        </layout>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="stash" />
+    </root>
+</configuration>

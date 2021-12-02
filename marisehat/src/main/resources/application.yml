@@ -8,6 +8,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: none
+  logstash:
+    server: logstash
 
 domain:
   name: ${DOMAIN_NAME}
