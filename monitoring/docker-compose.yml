@@ -1,0 +1,33 @@
+version: '3'
+services:
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - '9090:9090'
+
+  logstash:
+    image: grafana/logstash-output-loki
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    environment:
+      XPACK_MONITORING_ENABLED: 'false'
+
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+    ports:
+      - '3000:3000'
+    depends_on:
+      - prometheus
+      - loki
+
+  loki:
+    command: -config.file=/etc/loki/local-config.yaml
+    image: grafana/loki
+    ports:
+      - '3100:3100'
+
