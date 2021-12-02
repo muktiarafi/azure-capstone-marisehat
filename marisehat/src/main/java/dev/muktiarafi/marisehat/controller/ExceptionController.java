@@ -2,7 +2,6 @@ package dev.muktiarafi.marisehat.controller;
 
 import com.microsoft.graph.http.GraphServiceException;
 import dev.muktiarafi.marisehat.dto.ResponseListDto;
-import dev.muktiarafi.marisehat.exception.ResourceConflictException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -40,16 +39,6 @@ public class ExceptionController {
                 .status(false)
                 .message(HttpStatus.BAD_REQUEST.getReasonPhrase())
                 .data(messages)
-                .build();
-    }
-
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(ResourceConflictException.class)
-    public ResponseListDto<String> resourceConflictExceptionHandler(ResourceConflictException e) {
-        return ResponseListDto.<String>builder()
-                .status(false)
-                .message(HttpStatus.CONFLICT.getReasonPhrase())
-                .data(List.of(e.getMessage()))
                 .build();
     }
 
