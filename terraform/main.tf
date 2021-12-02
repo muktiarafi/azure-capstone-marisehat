@@ -147,3 +147,108 @@ resource "azurerm_app_service_certificate_binding" "custom_domain_ssl" {
   certificate_id      = azurerm_app_service_managed_certificate.custom_domain.id
   ssl_state           = "SniEnabled"
 }
+
+resource "azurerm_virtual_network" "southeast_asia" {
+  name                = "southeast-asia-network"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.marisehat.location
+  resource_group_name = azurerm_resource_group.marisehat.name
+}
+
+resource "azurerm_subnet" "internal" {
+  name                 = "one"
+  resource_group_name  = azurerm_resource_group.marisehat.name
+  virtual_network_name = azurerm_virtual_network.southeast_asia.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+resource "azurerm_public_ip" "grafana_monitoring" {
+  name                = "grafana-monitoring-ip"
+  resource_group_name = azurerm_resource_group.marisehat.name
+  location            = azurerm_resource_group.marisehat.location
+  allocation_method   = "Dynamic"
+}
+
+resource "azurerm_network_interface" "main" {
+  name                = "main-nic"
+  location            = azurerm_resource_group.marisehat.location
+  resource_group_name = azurerm_resource_group.marisehat.name
+
+  ip_configuration {
+    name                          = "configuration1"
+    subnet_id                     = azurerm_subnet.internal.id
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = azurerm_public_ip.grafana_monitoring.id
+  }
+}
+
+resource "azurerm_network_security_group" "monitoring" {
+  name                = "monitoring-security-group"
+  location            = azurerm_resource_group.marisehat.location
+  resource_group_name = azurerm_resource_group.marisehat.name
+
+  security_rule {
+    name                       = "SSH"
+    protocol                   = "TCP"
+    priority                   = 1001
+    direction                  = "Inbound"
+    access                     = "Allow"
+    source_port_range          = "*"
+    destination_port_range     = "22"
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+}
+
+resource "azurerm_network_interface_security_group_association" "monitoring_nsg" {
+  network_interface_id      = azurerm_network_interface.main.id
+  network_security_group_id = azurerm_network_security_group.monitoring.id
+}
+
+resource "azurerm_linux_virtual_machine" "grafana_monitoring" {
+  name                  = "grafana-monitoring"
+  location              = azurerm_resource_group.marisehat.location
+  resource_group_name   = azurerm_resource_group.marisehat.name
+  network_interface_ids = [azurerm_network_interface.main.id]
+  size                  = "Standard_B1ms"
+
+  admin_username = var.vm_username
+
+  admin_ssh_key {
+    username   = var.vm_username
+    public_key = var.vm_public_key
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "UbuntuServer"
+    sku       = "18.04-LTS"
+    version   = "latest"
+  }
+
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+  }
+}
+
+resource "azurerm_subnet" "integration" {
+  name                 = "two"
+  resource_group_name  = azurerm_resource_group.marisehat.name
+  virtual_network_name = azurerm_virtual_network.southeast_asia.name
+  address_prefixes     = ["10.0.2.0/24"]
+
+  delegation {
+    name = "delegation"
+
+    service_delegation {
+      name    = "Microsoft.Web/serverFarms"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+    }
+  }
+}
+
+resource "azurerm_app_service_virtual_network_swift_connection" "integration" {
+  app_service_id = azurerm_app_service.marisehat.id
+  subnet_id      = azurerm_subnet.integration.id
+}

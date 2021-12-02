@@ -29,3 +29,11 @@ variable "pg_db_name" {
 variable "app_service_ip" {
 
 }
+
+variable "vm_username" {
+
+}
+
+variable "vm_public_key" {
+
+}
