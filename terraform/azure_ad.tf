@@ -13,6 +13,14 @@ resource "random_uuid" "user_role" {
 resource "random_uuid" "partner_role" {
 }
 
+resource "random_uuid" "read_permission" {
+
+}
+
+resource "random_uuid" "write_permission" {
+
+}
+
 resource "azuread_application" "mari_sehat" {
   display_name = "MariSehat"
   owners       = [data.azuread_client_config.current.object_id]
@@ -25,7 +33,7 @@ resource "azuread_application" "mari_sehat" {
       admin_consent_description  = "Allow the application to read data of the API"
       admin_consent_display_name = "Allow Read"
       enabled                    = true
-      id                         = uuid()
+      id                         = random_uuid.read_permission.id
       type                       = "User"
       user_consent_display_name  = "Read"
       value                      = "read"
@@ -35,7 +43,7 @@ resource "azuread_application" "mari_sehat" {
       admin_consent_description  = "Allow the application to modify data of the API"
       admin_consent_display_name = "Allow Write"
       enabled                    = true
-      id                         = uuid()
+      id                         = random_uuid.write_permission.id
       type                       = "Admin"
       value                      = "write"
     }
@@ -70,7 +78,12 @@ resource "azuread_application" "mari_sehat" {
   }
 
   web {
-    redirect_uris = ["http://localhost:8080/login/oauth2/code/", "http://localhost:8080/swagger-ui/oauth2-redirect.html"]
+    redirect_uris = [
+      "http://localhost:8080/login/oauth2/code/",
+      "http://localhost:8080/swagger-ui/oauth2-redirect.html",
+      "https://${var.domain_name}/login/oauth2/code/",
+      "https://${var.domain_name}/swagger-ui/oauth2-redirect.html"
+    ]
 
     implicit_grant {
       access_token_issuance_enabled = true
