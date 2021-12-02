@@ -54,3 +54,61 @@ resource "azurerm_storage_management_policy" "lab_result" {
     }
   }
 }
+
+resource "azurerm_postgresql_server" "pg" {
+  name                = "marisehat-pg-db"
+  location            = "Australia East" // reach quota limit for south east asia
+  resource_group_name = azurerm_resource_group.marisehat.name
+
+  administrator_login          = var.pg_admin_login
+  administrator_login_password = var.pg_admin_password
+
+  sku_name   = "B_Gen5_1"
+  version    = "11"
+  storage_mb = 5120
+
+  backup_retention_days        = 7
+  geo_redundant_backup_enabled = false
+  auto_grow_enabled            = false
+
+  ssl_enforcement_enabled = false
+}
+
+resource "azurerm_postgresql_database" "marisehat" {
+  name                = var.pg_db_name
+  resource_group_name = azurerm_resource_group.marisehat.name
+  server_name         = azurerm_postgresql_server.pg.name
+  charset             = "UTF8"
+  collation           = "English_United States.1252"
+}
+
+resource "azurerm_app_service_plan" "marisehat" {
+  name                = "marisehat-appserviceplan"
+  location            = azurerm_resource_group.marisehat.location
+  resource_group_name = azurerm_resource_group.marisehat.name
+  kind                = "Linux"
+  reserved            = true
+
+  sku {
+    tier = "Standard"
+    size = "S1"
+  }
+}
+
+resource "azurerm_app_service" "marisehat" {
+  name                = "marisehat"
+  location            = azurerm_resource_group.marisehat.location
+  resource_group_name = azurerm_resource_group.marisehat.name
+  app_service_plan_id = azurerm_app_service_plan.marisehat.id
+
+  site_config {
+    always_on        = true
+    linux_fx_version = "DOCKER|muktiarafi/marisehat-api:latest"
+
+    health_check_path = "/actuator/health"
+  }
+
+  identity {
+    type = "SystemAssigned"
+  }
+}
