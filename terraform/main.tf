@@ -112,3 +112,38 @@ resource "azurerm_app_service" "marisehat" {
     type = "SystemAssigned"
   }
 }
+
+resource "azurerm_dns_a_record" "app_service_custom_domain" {
+  name                = "@"
+  resource_group_name = azurerm_resource_group.marisehat.name
+  zone_name           = azurerm_dns_zone.marisehat-public.name
+  ttl                 = 3600
+  records             = [var.app_service_ip]
+}
+
+resource "azurerm_dns_txt_record" "app_service_custom_domain" {
+  name                = "asuid"
+  resource_group_name = azurerm_resource_group.marisehat.name
+  zone_name           = azurerm_dns_zone.marisehat-public.name
+  ttl                 = 3600
+
+  record {
+    value = azurerm_app_service.marisehat.custom_domain_verification_id
+  }
+}
+
+resource "azurerm_app_service_custom_hostname_binding" "name" {
+  hostname            = var.domain_name
+  app_service_name    = azurerm_app_service.marisehat.name
+  resource_group_name = azurerm_resource_group.marisehat.name
+}
+
+resource "azurerm_app_service_managed_certificate" "custom_domain" {
+  custom_hostname_binding_id = azurerm_app_service_custom_hostname_binding.name.id
+}
+
+resource "azurerm_app_service_certificate_binding" "custom_domain_ssl" {
+  hostname_binding_id = azurerm_app_service_custom_hostname_binding.name.id
+  certificate_id      = azurerm_app_service_managed_certificate.custom_domain.id
+  ssl_state           = "SniEnabled"
+}

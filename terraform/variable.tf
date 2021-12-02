@@ -25,3 +25,7 @@ variable "pg_admin_password" {
 variable "pg_db_name" {
 
 }
+
+variable "app_service_ip" {
+
+}
