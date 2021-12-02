@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: marisehat-api
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USER}
@@ -32,6 +34,15 @@ springdoc:
     oauth2-redirect-url: ${OAUTH2_REDIRECT_URL}
   oAuthFlow:
     authorizationUrl: ${OAUTH2_AUTHORIZATION_URL}
+
+management:
+  endpoint:
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
 
 app:
   config:
