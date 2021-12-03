@@ -26,18 +26,25 @@ public class UserServiceImpl implements UserService {
     private final String domainName;
     private final GraphServiceUtils graphServiceUtils;
     private final UserMapper userMapper;
+    private final String registrationId;
 
     public UserServiceImpl(
-            @Value("${domain.name}") String domainName,
+            @Value("${app.config.domain.name}") String domainName,
             GraphServiceUtils graphServiceUtils,
-            UserMapper userMapper
+            UserMapper userMapper,
+            @Value("${app.config.registration.id}") String registrationId
     ) {
         this.domainName = domainName;
         this.graphServiceUtils = graphServiceUtils;
         this.userMapper = userMapper;
+        this.registrationId = registrationId;
     }
 
-    public UserDto create(RegisterUserDto registerUserDto, String groupName) {
+    public UserDto create(String registrationIdHeader, RegisterUserDto registerUserDto, String groupName) {
+        if (!registrationIdHeader.equals(registrationId)) {
+            throw new IllegalArgumentException("Registration id not match");
+        }
+
         if (!groupName.equals("User") && !groupName.equals("Partner")) {
             throw new IllegalArgumentException("Only User and Partner group is valid");
         }

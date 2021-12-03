@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2Aut
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,10 +29,11 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<UserDto> create(
+            @RequestHeader("x-partner-id") String registrationIdHeader,
             @Valid @RequestBody RegisterUserDto registerUserDto,
             @RequestParam(name = "groupName", defaultValue = "User") String groupName
     ) {
-        var user = userService.create(registerUserDto, groupName);
+        var user = userService.create(registrationIdHeader, registerUserDto, groupName);
 
         return ResponseDto.<UserDto>builder()
                 .status(true)

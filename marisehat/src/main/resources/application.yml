@@ -11,9 +11,6 @@ spring:
   logstash:
     server: ${LOGSTASH_SERVER}
 
-domain:
-  name: ${DOMAIN_NAME}
-
 azure:
   activedirectory:
     client-secret: ${CLIENT_SECRET}
@@ -48,6 +45,10 @@ management:
 
 app:
   config:
+    registration:
+      id: ${REGISTRATION_ID}
+    domain:
+      name: ${DOMAIN_NAME}
     azure:
       storage:
         endpoint: ${STORAGE_ENDPOINT}
