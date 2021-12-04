@@ -29,7 +29,7 @@ public class SecurityConfig extends AADWebSecurityConfigurerAdapter {
                 .mvcMatchers(HttpMethod.GET, "/patients/**").hasAnyRole("Admin", "User", "Partner")
                 .mvcMatchers(HttpMethod.POST, "/patients/**").hasAnyRole("Admin", "User")
                 .mvcMatchers(HttpMethod.PUT, "/patients/**").hasAnyRole("Admin", "User")
-                .mvcMatchers(HttpMethod.DELETE, "/patients/**").hasAnyRole("Admin", "User")
+                .mvcMatchers(HttpMethod.DELETE, "/patients/**").hasAnyRole("Admin")
                 .anyRequest().authenticated();
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }

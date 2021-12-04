@@ -38,6 +38,7 @@ public class PatientController {
 
         return ResponseDto.<Patient>builder()
                 .status(true)
+                .message(HttpStatus.CREATED.getReasonPhrase())
                 .data(patient)
                 .build();
     }
@@ -94,6 +95,7 @@ public class PatientController {
     }
 
     @PostMapping("/{patientId}/lab-results")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<LabResult> createLabResult(@PathVariable UUID patientId, @RequestBody LabResultDto labResultDto) {
         var labResult = labResultService.create(patientId, labResultDto);
 

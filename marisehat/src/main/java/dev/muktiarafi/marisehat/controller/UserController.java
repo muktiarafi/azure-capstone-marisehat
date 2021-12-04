@@ -29,7 +29,7 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseDto<UserDto> create(
-            @RequestHeader("x-partner-id") String registrationIdHeader,
+            @RequestHeader("x-registration-id") String registrationIdHeader,
             @Valid @RequestBody RegisterUserDto registerUserDto,
             @RequestParam(name = "groupName", defaultValue = "User") String groupName
     ) {

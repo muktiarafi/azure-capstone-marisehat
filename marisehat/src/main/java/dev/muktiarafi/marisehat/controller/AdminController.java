@@ -36,6 +36,7 @@ public class AdminController {
 
         return ResponseListDto.<UserDto>builder()
                 .status(true)
+                .message(HttpStatus.OK.getReasonPhrase())
                 .data(users)
                 .build();
     }
