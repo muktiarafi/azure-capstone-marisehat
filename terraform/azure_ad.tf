@@ -47,8 +47,11 @@ resource "azuread_application" "mari_sehat" {
       type                       = "Admin"
       value                      = "write"
     }
-
   }
+
+  group_membership_claims = ["SecurityGroup"]
+
+  identifier_uris = ["api://marisehat"]
 
   app_role {
     allowed_member_types = ["User", "Application"]
