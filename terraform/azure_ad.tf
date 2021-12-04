@@ -77,7 +77,7 @@ resource "azuread_application" "mari_sehat" {
     display_name         = "Partner"
     enabled              = true
     id                   = random_uuid.partner_role.id
-    value                = "partner"
+    value                = "Partner"
   }
 
   web {
