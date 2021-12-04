@@ -100,6 +100,7 @@ resource "azurerm_app_service" "marisehat" {
   location            = azurerm_resource_group.marisehat.location
   resource_group_name = azurerm_resource_group.marisehat.name
   app_service_plan_id = azurerm_app_service_plan.marisehat.id
+  https_only          = true
 
   site_config {
     always_on        = true
