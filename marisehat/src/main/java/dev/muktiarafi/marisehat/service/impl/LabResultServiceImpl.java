@@ -52,8 +52,9 @@ public class LabResultServiceImpl implements LabResultService {
                 .orElseThrow(() -> new ResourceNotFoundException("Patient not found"));
 
         var labResultId = UUID.randomUUID();
-        var blobName = String.format("resutl-%s.pdf", labResultId);
+        var blobName = String.format("result-%s.pdf", labResultId);
         var labResult = labResultMapper.labResultDtoToLabResult(labResultDto, blobName, patient);
+        labResult.setId(labResultId);
         labResult = labResultRepository.save(labResult);
 
         var labResultBytes = generateLabResult(patient, labResult);
@@ -110,9 +111,9 @@ public class LabResultServiceImpl implements LabResultService {
         addLabResultDetailTableRow("Tanggal Pemeriksaan", formatter.format(labResult.getConductedAt()), labResultDetailTable);
         addLabResultDetailTableRow("Nama", patient.getFullName(), labResultDetailTable);
         addLabResultDetailTableRow("No. Telp", patient.getPhoneNumber(), labResultDetailTable);
-        addLabResultDetailTableRow("Umur", patient.getPhoneNumber(), labResultDetailTable);
+        addLabResultDetailTableRow("Umur", String.valueOf(patient.getAge()), labResultDetailTable);
 
-        var gender = patient.getGender() == Gender.MALE ? "Laki-laki" : "Peremepuan" ;
+        var gender = patient.getGender() == Gender.MALE ? "Laki-laki" : "Perempuan" ;
         addLabResultDetailTableRow("Jenis Kelamin", gender, labResultDetailTable);
 
         var resultTable = new Table(2);
